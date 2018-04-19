@@ -1,0 +1,116 @@
+#include "stdafx.h"
+#include "stdio.h"
+#include "ctype.h"
+#include "math.h"
+#include "string.h"
+
+#define pi 3.14159265359
+
+double degreesToRadians(double degrees)
+{
+	return degrees * pi / 180;
+}
+
+void main()
+{
+	char again = 'y';
+
+	while
+		(again != 'n')
+	{
+
+		double degrees, answer, radians;
+		char c;
+		char functionName[4];
+		int index;
+
+
+		printf("Enter calculation using degrees, e.g. \"cos 45\" : ");
+		scanf_s("%s %lf", functionName, 4, &degrees);
+
+		while ((c = getchar()) != '\n');
+
+		radians = degreesToRadians(degrees);
+
+		index = 0;
+		while (functionName[index])
+		{
+			functionName[index] = toupper(functionName[index]);
+			index++;
+		}
+
+		if (strcmp("COS", functionName) == 0)
+			answer = cos(radians);
+		else
+
+			if (strcmp("SIN", functionName) == 0)
+				answer = sin(radians);
+			else
+
+				if (strcmp("TAN", functionName) == 0)
+					answer = tan(radians);
+				else
+				{
+					printf("Function is wrong");
+					answer = 0;
+				}
+
+		printf("%s %f = %.4f\n", functionName, degrees, answer);
+
+
+		printf("Another Calculation? <y/n>: ");
+		scanf_s("%c", &again, 1);
+
+		while (again != 'y' &&again != 'n')
+		{
+			printf("Invalid Character \n ");
+			printf("Another Calculation? <y/n>: ");
+			while ((again = getchar()) != '\n');
+			scanf_s("%c", &again, 1);
+
+		}
+	}
+}
+index = 0;
+while (functionName[index])
+{
+	functionName[index] = toupper(functionName[index]);
+	index++;
+}
+
+if (strcmp("COS", functionName) == 0)
+	answer = cos(radians);
+else
+
+	if (strcmp("SIN", functionName) == 0)
+		answer = sin(radians);
+	else
+
+		if (strcmp("TAN", functionName) == 0)
+			answer = tan(radians);
+		else
+		{
+			printf("Function is wrong");
+			answer = 0;
+		}
+
+		
+		double degrees, answer, radians;
+		char c;
+		char functionName[4];
+		int index;
+
+
+		printf("Enter calculation using degrees, e.g. \"cos 45\" : ");
+		scanf_s("%s %lf", functionName, 4, &degrees);
+
+		while ((c = getchar()) != '\n');
+
+		radians = degreesToRadians(degrees);
+
+		index = 0;
+		while (functionName[index])
+		{
+			functionName[index] = toupper(functionName[index]);
+			index++;
+		}
