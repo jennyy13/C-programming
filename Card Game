@@ -1,124 +1,185 @@
 #include "stdafx.h"
+#include <stdio.h>
 #include "string.h"
+#include "stdarg.h"
 #include "stdlib.h"
+#include "time.h"
 
-struct date
+typedef enum S { CLUBS, DIAMONDS, HEARTS, SPADES } SUIT;
+char suits[][10] = { "CLUBS", "DIAMONDS", "HEARTS", "SPADES" };
+
+typedef enum F { TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE } FACE;
+char faces[][10] = { "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "JACK", "QUEEN", "KING", "ACE" };
+
+typedef struct
 {
-	int day, month, year;
-};
+	SUIT suit;
+	FACE face;
+} card;
 
-
-struct student
+typedef struct
 {
-	char firstName[50];
-	char surname[50];
-	int ID;
-	struct date DOB;
-};
+	card cards[5];
+} hand;
+
+// function deals a random hand of cards - BUT .... same card CANNOT be dealt twice!
+// so if same card already in the hand, you would need to draw again
+// also, the card cannot appear in another hand either
+hand dealHand(hand handsDealt[], int numHandsDealt);
+
+// returns pointer to string containing, for example, "ACE of HEARTS"
+char * printCard(card aCard);
+
+// compares the FACE values of two cards (TWO is lowest, ACE is highest)
+// returns pointer to string containing name of winner: "You" or "Dealer" (or "Draw" if the face values are the same)
+char * compareCards(card yourCard, card dealersCard);
+
+// returns true if the hand contains four ACES
+bool fourAces(hand aHand);
 
 
-int addStudent(struct student students[], int numStudents);
-void printStudents(struct student students[], int numStudents);
-void sortByID(struct student students[], int numStudents);
-void sortBySurname(struct student students[], int numStudents);
-
-
-int main()
+void main()
 {
+	int i = 0;
+	hand myHand, dealersHand;
+	int seed = time(NULL);
+	srand(seed);
+	hand hands[10];
 
-	struct student students[100] = { { "Rolando", "Gamble", 17560001,{ 1, 1, 2000 } },{ "Kyra", "Eaton", 17973061,{ 11, 10, 2016 } },{ "Chandler", "Humphrey", 17427400,{ 6, 12, 1999 } },{ "Makayla", "Huang", 17127058,{ 2, 2, 2000 } },{ "Jazmyn", "Terrell", 17746780,{ 29, 6, 2000 } },{ "Erica", "Glass", 17058753,{ 13, 8, 2000 } },{ "Alyvia", "Blair", 17599020,{ 11, 9, 2000 } },{ "Talia", "Chen", 17619205,{ 17, 10, 2000 } },{ "Rebekah", "Hopkins", 17912255,{ 25, 11, 2000 } },{ "Jocelynn", "Ware", 17899236,{ 27, 4, 1999 } } };
+	// deal the first hand
+	myHand = dealHand(hands, 0);
 
-	int numStudents = 10;
+	// add this new hand to the set of dealt hands
+	hands[0] = myHand;
 
+	// deal another hand; let dealHand know what has already been dealt
+	dealersHand = dealHand(hands, 1);
 
-	numStudents = addStudent(students, numStudents);
+	// here you are just comparing each card one at a time in the two hands
+	while (i<5)
+	{
+		printf("card#%d: %s (you) vs. %s (dealer). Winner: %s \n", i + 1, printCard(myHand.cards[i]), printCard(dealersHand.cards[i]), compareCards(myHand.cards[i], dealersHand.cards[i]));
+		i++;
+	}
 
+	// now try to deal 4 Aces !
+	while (1)
+	{
+		// deal a new hand; assume new deck every time, so nothing dealt already
+		myHand = dealHand(hands, 0);
 
-	sortByID(students, numStudents);
-	printf("\n\n%d Students, Sorted by ID: \n", numStudents);
-	printStudents(students, numStudents);
-
-
-	sortBySurname(students, numStudents);
-	printf("\n\n%d Students, Sorted by Surname: \n", numStudents);
-	printStudents(students, numStudents);
-
-	return 0;
+		// does it contain 4 ACES?
+		if (fourAces(myHand)) break;
+		i++; // keep track of number of hands dealt
+	}
+	// print out how many hands it took to find 4 aces
+	printf("\n\n4 aces found after %d hands \n\n\n", i);
 }
 
-void swapStudents(struct student students[], int a, int b)
+// compares the FACE values of two cards (TWO is lowest, ACE is highest)
+// returns pointer to string containing name of winner: "You" or "Dealer" (or "Draw" if the face values are the same)
+char * compareCards(card yourCard, card dealersCard)
 {
-	struct student temp;
-	memcpy_s(&temp, sizeof(student), &students[a], sizeof(student));
-	memcpy_s(&students[a], sizeof(student), &students[b], sizeof(student));
-	memcpy_s(&students[b], sizeof(student), &temp, sizeof(student));
+	char * sptr;
+	sptr = (char *)malloc(10 * sizeof(char));
+
+	// your code goes here
+	if (yourCard.face == dealersCard.face) {
+		strcpy(sptr, "Draw");
+	}
+	else if (yourCard.face < dealersCard.face) {
+		strcpy(sptr, "Dealer");
+	}
+	else strcpy(sptr, "You");
+
+	return sptr;
 }
 
-int addStudent(struct student students[], int numStudents)
+// returns pointer to string containing, for example, "ACE of HEARTS"
+char * printCard(card aCard)
 {
-	char first[50], last[50];
-	int id, dd, mm, yyyy;
+	char * sptr;
 
-	if (numStudents >= 100)
-		return numStudents;
+	// your code goes here
+	sptr = (char *)malloc(24 * sizeof(char));
 
-	printf("Add new Student\n");
-	printf(" Enter Data as follows:\nfname sname id dd mm yyyy\n");
-	scanf_s("%s %s %d %d %d %d", first, 50, last, 50, &id, &dd, &mm, &yyyy);
+	sprintf(sptr, "%s of %s", faces[aCard.face], suits[aCard.suit]);
 
-	students[numStudents].ID = id;
-	students[numStudents].DOB.day = dd;
-	students[numStudents].DOB.month = mm;
-	students[numStudents].DOB.year = yyyy;
-	strcpy_s(students[numStudents].firstName, 50, first);
-	strcpy_s(students[numStudents].surname, 50, last);
-
-	numStudents++;
-	return numStudents;
+	return sptr;
 }
 
-void printStudents(struct student students[], int numStudents)
+// function deals a random hand of cards - BUT .... same card CANNOT be dealt twice!
+// so if same card already in the hand, you would need to draw again
+// also, the card cannot appear in another hand either
+hand dealHand(hand handsDealt[], int numHands)
+{
+	int i, n, j;
+	int found = 0;
+	hand newHand;
+	int ncards = 0;
+
+	SUIT newSuit;
+	FACE newFace;
+
+	// your code goes here
+
+	for (i = 0; i < 5; i++) {
+
+		do {
+			newSuit = (SUIT)(rand() % 4);
+			newFace = (FACE)(rand() % 13);
+			
+			found = 0; 
+
+			//check cards dealt in this hand
+			for (j = 0; j < i; j++) {
+				if (newHand.cards[j].face == newFace && newHand.cards[j].suit == newSuit)
+					found++;
+			}
+		
+			if (found == 0) {
+				// wasnt found in current hand, check other hands
+				for (n = 0; n < numHands; n++) {
+
+					for (j = 0; j < 5; j++) {
+
+						if (handsDealt[n].cards[j].face == newFace && handsDealt[n].cards[j].suit == newSuit)
+							found++;
+					}
+				}
+				
+			}
+
+
+		} while (found);
+
+		newHand.cards[i].face = newFace;
+		newHand.cards[i].suit = newSuit;
+	}
+
+
+	return newHand;
+}
+
+// returns true if the hand contains four ACES
+bool fourAces(hand aHand)
 {
 	int i;
+	int numAces = 0;
+	bool fourAces = false;
 
-	printf("%20s%20s%15s\t\t%10s\n", "First Name", "Surname", "ID Number", "DOB");
-	// write a for loop to print out each student structure
-	for (i = 0; i < numStudents; i++)
-		printf("%20s%20s%15d\t\t%2d/%2d/%4d\n", students[i].firstName, students[i].surname, students[i].ID, students[i].DOB.day, students[i].DOB.month, students[i].DOB.year);
+	// your code goes here
+	for (i = 0; i < 5; i++) {
 
-}
+		if (aHand.cards[i].face == ACE)
 
-void sortByID(struct student students[], int numStudents)
-{
-	struct student temp;
-	int i, j;
-	int swapped = -1;
-	while (swapped != 0)
-	{
-		swapped = 0;
-		for (i = 0; i < numStudents - 1; i++)
-			if (students[i].ID > students[i + 1].ID)
-			{
-				swapStudents(students, i, i + 1);
-				swapped++;
-			}
-	}
-}
-
-void sortBySurname(struct student students[], int numStudents)
-{
-	struct student temp;
-	int i, j;
-	int swapped = -1;
-	while (swapped != 0)
-	{
-		swapped = 0;
-		for (i = 0; i < numStudents - 1; i++)
-			if (strcmp(students[i].surname, students[i + 1].surname) > 0)
-			{
-				swapStudents(students, i, i + 1);
-				swapped++;
-			}
+		numAces++;
 	}
 
+	if (numAces == 4)
+		fourAces = true;
+
+	return fourAces;
+
 }
+
