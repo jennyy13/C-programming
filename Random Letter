@@ -1,0 +1,75 @@
+#include "stdafx.h"
+#include "stdio.h"
+#include "stdlib.h"
+
+#define X 4000
+#define SCALE 60
+
+char getRandomLowercaseLetter()
+{
+
+
+	char randomLetter = 'a' + (rand() % 26);
+
+
+	return randomLetter;
+}
+
+void initialiseArray(int array[], int len)
+{
+
+	for (int i = 0; i < len; i++)
+	{
+		array[i] = 0;
+	}
+}
+
+void printLine(int len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		printf("*");
+	}
+	printf("\n");
+
+}
+
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+
+	int letterCounts[26], scaledCounts[26], highestCount;
+
+
+	initialiseArray(letterCounts, 26);
+
+
+	for (int i = 0; i < X; i++)
+	{
+		char randomLetter = getRandomLowercaseLetter();
+		letterCounts[randomLetter - 'a']++;
+	}
+
+
+	highestCount = 0;
+	for (int i = 0; i < 26; i++)
+	{
+		if (letterCounts[i] > highestCount)
+			highestCount = letterCounts[i];
+	}
+	for (int i = 0; i < 26; i++)
+	{
+		scaledCounts[i] = letterCounts[i] * SCALE / highestCount;
+	}
+
+	printf("Num throws = %d, Max Freq = %d, scale = 0-%d\n\n", X, highestCount, SCALE);
+
+	for (int i = 0; i < 26; i++)
+	{
+		printf("%c\t%d\t", 'a' + i, letterCounts[i]);
+		printLine(scaledCounts[i]);
+	}
+
+
+	return 0;
+}
